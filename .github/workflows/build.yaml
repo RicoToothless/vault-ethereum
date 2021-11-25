@@ -27,10 +27,13 @@ jobs:
           path: ~/go/pkg/mod
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
 
-      - name: Build & generate sha256sum file
+      - name: Build
         run: |
          - CGO_ENABLED=1 GOOS=linux go build -a -v -i -o /tmp/vault-ethereum-${{ matrix.platform }} .
-         - sha256sum -b /tmp/vault-ethereum-${{ matrix.platform }} > /tmp/vault-ethereum-sha256sum-${{ matrix.platform }}
+           #         - sha256sum -b /tmp/vault-ethereum-${{ matrix.platform }} > /tmp/vault-ethereum-sha256sum-${{ matrix.platform }}
+
+      - name: generate sha256sum file
+        run: sha256sum -b /tmp/vault-ethereum-${{ matrix.platform }} > /tmp/vault-ethereum-sha256sum-${{ matrix.platform }}
 
       - name: Release
         uses: softprops/action-gh-release@v1
