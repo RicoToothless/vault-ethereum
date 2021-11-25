@@ -7,9 +7,10 @@ jobs:
   build:
     strategy:
       matrix:
-        platform: [ubuntu-20.04]
         go-version: [1.17.x]
-    runs-on: ${{ matrix.platform }}
+        goos: [linux, windows, darwin]
+        goarch: [amd64, arm64]
+    runs-on: ubuntu-20.04
     name: Build and release
     env:
       GOBIN: /tmp/.bin
@@ -28,27 +29,27 @@ jobs:
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
 
       - name: Build and generate sha256sum file
+        env:
+          CGO_ENABLED: 1
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
         run: |
-          CGO_ENABLED=1 GOOS=linux go build -ldflags '-extldflags "-static"' -a -v -i -o /tmp/vault-ethereum-${{ matrix.platform }} .
-          sha256sum -b /tmp/vault-ethereum-${{ matrix.platform }} > /tmp/vault-ethereum-sha256sum-${{ matrix.platform }}
-
-           #      - name: generate sha256sum file
-           #        run: sha256sum -b /tmp/vault-ethereum-${{ matrix.platform }} > /tmp/vault-ethereum-sha256sum-${{ matrix.platform }}
+          CGO_ENABLED=1 GOOS=linux go build -ldflags '-extldflags "-static"' -v -o /tmp/vault-ethereum-${{ matrix.goos }}-${{ matrix.goarch }} .
+          sha256sum -b /tmp/vault-ethereum-${{ matrix.platform }} > /tmp/vault-ethereum-sha256sum-${{ matrix.goos }}-${{ matrix.goarch }}
 
       - name: Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
-            /tmp/vault-ethereum-${{ matrix.platform }}
-            /tmp/vault-ethereum-sha256sum-${{ matrix.platform }}
-
-            #      - name: Upload binaries to release
-            #        uses: svenstaro/upload-release-action@v2
-            #        with:
-            #          repo_token: ${{ secrets.GITHUB_TOKEN }}
-            #          file: /tmp/vault-ethereum-*
-            #          asset_name: vault-ethereum-${{ matrix.platform }}
-            #          tag: ${{ github.ref }}
-            #          overwrite: true
-            #          body: "This is my release text"
+            /tmp/vault-ethereum-${{ matrix.goos }}-${{ matrix.goarch }}
+            /tmp/vault-ethereum-sha256sum-${{ matrix.goos }}-${{ matrix.goarch }}
+          #      - uses: wangyoucao577/go-release-action@v1.16
+          #        with:
+          #          github_token: ${{ secrets.GITHUB_TOKEN }}
+          #          goos: ${{ matrix.goos }}
+          #          goarch: ${{ matrix.goarch }}
+          #          project_path: "${{ env.CMD_PATH }}"
+          #          build_flags: -v
+          #          ldflags: -extldflags "-static"
+          #          sha256sum: TRUE
