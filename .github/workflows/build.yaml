@@ -28,11 +28,8 @@ jobs:
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
 
       - name: Build and generate sha256sum file
-        env:
-          CGO_ENABLED: 1
-          GOOS: linux
         run: |
-          go build -a -v -i -o /tmp/vault-ethereum-${{ matrix.platform }} .
+          CGO_ENABLED=1 GOOS=linux go build -a -v -i -o /tmp/vault-ethereum-${{ matrix.platform }} .
           sha256sum -b /tmp/vault-ethereum-${{ matrix.platform }} > /tmp/vault-ethereum-sha256sum-${{ matrix.platform }}
 
            #      - name: generate sha256sum file
