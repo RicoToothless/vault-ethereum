@@ -32,8 +32,8 @@ jobs:
           CGO_ENABLED: 1
           GOOS: linux
         run: |
-         - go build -a -v -i -o /tmp/vault-ethereum-${{ matrix.platform }} .
-         - sha256sum -b /tmp/vault-ethereum-${{ matrix.platform }} > /tmp/vault-ethereum-sha256sum-${{ matrix.platform }}
+          go build -a -v -i -o /tmp/vault-ethereum-${{ matrix.platform }} .
+          sha256sum -b /tmp/vault-ethereum-${{ matrix.platform }} > /tmp/vault-ethereum-sha256sum-${{ matrix.platform }}
 
            #      - name: generate sha256sum file
            #        run: sha256sum -b /tmp/vault-ethereum-${{ matrix.platform }} > /tmp/vault-ethereum-sha256sum-${{ matrix.platform }}
