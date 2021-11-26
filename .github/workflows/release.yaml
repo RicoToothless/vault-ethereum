@@ -37,7 +37,7 @@ jobs:
       - uses: wangyoucao577/go-release-action@v1.16
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          goos: linux
+          goos: darwin
           goarch: amd64
           build_flags: -v
           ldflags: -extldflags "-static"
