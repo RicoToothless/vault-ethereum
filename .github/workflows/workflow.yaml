@@ -15,7 +15,7 @@ jobs:
           - os: macos-11
             goos: darwin
             goarch: amd64
-    runs-on: ${{ matrix.platform }}
+    runs-on: ${{ matrix.os }}
     name: Build and release
     env:
       GOBIN: /tmp/.bin
@@ -39,10 +39,9 @@ jobs:
           GOOS: ${{ matrix.goos }}
           GOARCH: ${{ matrix.goarch }}
         run: |
-          go build -ldflags '-extldflags "-static"' -a -v -i -o /tmp/vault-ethereum-${{ matrix.platform }} .
-          sha256sum -b /tmp/vault-ethereum-${{ matrix.platform }} > /tmp/vault-ethereum-sha256sum-${{ matrix.platform }}
-           #      - name: generate sha256sum file
-           #        run: sha256sum -b /tmp/vault-ethereum-${{ matrix.platform }} > /tmp/vault-ethereum-sha256sum-${{ matrix.platform }}
+          go build -ldflags '-extldflags "-static"' -a -v -i -o /tmp/vault-ethereum-${{ matrix.goos }}-${{ matrix.goarch }} .
+          sha256sum -b /tmp/vault-ethereum-${{ matrix.platform }} > /tmp/vault-ethereum-sha256sum-${{ matrix.goos }}-${{ matrix.goarch }}
+
       - name: Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
