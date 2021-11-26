@@ -7,11 +7,16 @@ on:
 jobs:
   build:
     name: Build and release
-    runs-on: ubuntu-20.04
     strategy:
       matrix:
-        goos: [linux, darwin]
-        goarch: [amd64]
+        include:
+          - os: ubuntu-20.04
+            goos: linux
+            goarch: amd64
+          - os: macos-11
+            goos: darwin
+            goarch: amd64
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout code into the Go module directory.
         uses: actions/checkout@v2
@@ -25,7 +30,7 @@ jobs:
         env:
           CGO_ENABLED: 1
           GOOS: ${{ matrix.goos }}
-          #          GOARCH: ${{ matrix.goarch }}
+          GOARCH: ${{ matrix.goarch }}
         run: |
           go build -ldflags '-extldflags "-static"' -v -o /tmp/vault-ethereum-${{ matrix.goos }}-${{ matrix.goarch }} .
           sha256sum -b /tmp/vault-ethereum-${{ matrix.platform }} > /tmp/vault-ethereum-sha256sum-${{ matrix.goos }}-${{ matrix.goarch }}
